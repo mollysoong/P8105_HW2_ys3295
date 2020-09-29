@@ -113,11 +113,13 @@ entry_num = nyc_transit_df %>%
 
 no_vending_prop = nrow(no_vending_num)/nrow(entry_num)
 ```
-
+* There are `r count(station_num)` distinct stations.
 * There are `r count(ada_num)` stations are ADA compliant.
 * The proportion of station entrance/ exits without vending allow entrance is `r no_vending_prop`. 
 
-## Problem 3
+
+
+## Problem 3 
 
 First, we read and clean the data in pols-month.csv.
 ```{r}
