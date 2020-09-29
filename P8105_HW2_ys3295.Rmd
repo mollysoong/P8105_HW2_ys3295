@@ -34,7 +34,7 @@ trashwheel_df =
 	)
 ```
 
-Read precipitation data! For 2018 and 2017. 
+Read precipitation data! For 2018 and 2017.
 
 ```{r}
 precip_2018 = 
