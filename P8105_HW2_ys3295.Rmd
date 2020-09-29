@@ -90,9 +90,7 @@ nyc_transit_df = read.csv ("./data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv
 janitor::clean_names() %>% 
 select(line, station_name, station_latitude, station_longitude, route1:route11, entry, vending, entrance_type, ada) %>% 
 mutate(entry = recode(entry, 'YES' = TRUE, 'NO' = FALSE), 
-       vending = recode(vending,'YES' = TRUE, 'NO' = FALSE),
-       entry = as.logical(entry),
-       vending = as.logical(vending))
+       entry = as.logical(entry))
 
 ```
 Description
@@ -100,9 +98,24 @@ Description
 The data contains information related to each entrance and exit for each subway station in NYC.
 The resulting dataset contains information on line, station name, station latitude, station logitude, routes served, entry, vending, entrance type and ADA compliance.The dimension of the resulting dataset is `r nrow(nyc_transit_df)` x `r ncol(nyc_transit_df)`. 
 
-* There are `r (distinct(nyc_transit_df, line, station_name ))%>% count()` distinct stations. 
-* There are `r nyc_transit_df %>% filter(ada == TRUE) %>% count()` stations are ADA compliant.
-* The proportion of station entrance/ exits without vending allow entrance are respectively. 
+```{r}
+# Question 1
+station_num = distinct(nyc_transit_df, line, station_name)
+
+# Question 2
+ada_num = distinct(nyc_transit_df, line, station_name,ada) %>% filter(ada == TRUE)
+
+# Question 3
+no_vending_num = nyc_transit_df %>%
+  filter(vending == 'NO', entry == TRUE)
+entry_num = nyc_transit_df %>%
+  filter(vending == 'NO')
+
+no_vending_prop = nrow(no_vending_num)/nrow(entry_num)
+```
+
+* There are `r count(ada_num)` stations are ADA compliant.
+* The proportion of station entrance/ exits without vending allow entrance is `r no_vending_prop`. 
 
 ## Problem 3
 
