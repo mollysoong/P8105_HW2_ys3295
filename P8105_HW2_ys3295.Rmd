@@ -83,7 +83,7 @@ This dataset contains information from the Mr. Trashwheel trash collector in Bal
 
 
 ## Problem 2
-Read NYC Transit data. 
+Read and clean NYC Transit data.
 
 ```{r}
 nyc_transit_df = read.csv ("./data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv", na.strings = c("","NA")) %>% 
@@ -95,8 +95,8 @@ mutate(entry = recode(entry, 'YES' = TRUE, 'NO' = FALSE),
 ```
 Description
 
-The data contains information related to each entrance and exit for each subway station in NYC.
-The resulting dataset contains information on line, station name, station latitude, station logitude, routes served, entry, vending, entrance type and ADA compliance.The dimension of the resulting dataset is `r nrow(nyc_transit_df)` x `r ncol(nyc_transit_df)`. 
+The NYC transit data contains information related to each entrance and exit for each subway station in NYC.
+The resulting dataset contains information on line, station name, station latitude, station logitude, routes served, entry, vending, entrance type and ADA compliance.And the entry variable is converted from character to logical variable. The dimension of the resulting data is `r nrow(nyc_transit_df)` x `r ncol(nyc_transit_df)`. 
 
 ```{r}
 # Question 1
@@ -111,13 +111,24 @@ no_vending_num = nyc_transit_df %>%
 entry_num = nyc_transit_df %>%
   filter(vending == 'NO')
 
-no_vending_prop = nrow(no_vending_num)/nrow(entry_num)
+no_vending_prop = nrow(no_vending_num)/nrow(entry_num)*100
 ```
 * There are `r count(station_num)` distinct stations.
 * There are `r count(ada_num)` stations are ADA compliant.
-* The proportion of station entrance/ exits without vending allow entrance is `r no_vending_prop`. 
+* The proportion of station entrance/ exits without vending allow entrance is `r round(no_vending_prop, digits = 2)`%. 
 
-
+```{r}
+nyc_transit_tidy = nyc_transit_df %>%
+  mutate (route8 = as.character(route8),
+         route9 = as.character(route9),
+         route10 = as.character(route10),
+         route11 = as.character(route11)) %>%
+  pivot_longer (
+    route1:route11,
+    names_to = "route_name",
+    values_to = "route_num")
+```
+* There are `r count (distinct(nyc_transit_tidy, line, station_name, route_num) %>% filter(route_num == 'A'))` distinct stations serve the A train. Of the stations that serve the A train, there are `r count(distinct(nyc_transit_tidy, line, station_name, route_num, ada) %>% filter(route_num == 'A', ada == TRUE))` ADA compliant.
 
 ## Problem 3 
 
@@ -136,8 +147,6 @@ pols_month = read_csv(file = "./data/fivethirtyeight_datasets/pols-month.csv") %
   select(-prez_gop, -prez_dem, -day) %>% 
   arrange(year, month) 
 
-pols_month
-
 ```
 
 Second, we read and clean the data in snp.csv.
@@ -152,8 +161,6 @@ snp = read_csv(file = "./data/fivethirtyeight_datasets/snp.csv") %>%
     month = month.abb[month]
   ) %>% 
   select(year, month, everything(),-day) 
-
-snp
   
 ```
 
@@ -169,8 +176,6 @@ unemployment = read_csv(file = "./data/fivethirtyeight_datasets/unemployment.csv
   ) %>% 
   arrange(year, month) 
 
-unemployment
-
 ```
 
 Then, we combine the above three datasets together. 
@@ -181,7 +186,6 @@ pols =
 pols_tidy = 
   left_join(pols, unemployment)
 
-pols_tidy
 ```
 
 Description
